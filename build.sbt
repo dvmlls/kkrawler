@@ -1,4 +1,4 @@
-name := "skkraper"
+name := "krawlr"
 
 version := "1.0"
 

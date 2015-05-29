@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/skkraper.iml" filepath="$PROJECT_DIR$/.idea/modules/skkraper.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/skkraper-build.iml" filepath="$PROJECT_DIR$/.idea/modules/skkraper-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/krawlr.iml" filepath="$PROJECT_DIR$/.idea/modules/krawlr.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/krawlr-build.iml" filepath="$PROJECT_DIR$/.idea/modules/krawlr-build.iml" />
     </modules>
   </component>
 </project>
