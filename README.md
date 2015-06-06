@@ -12,6 +12,6 @@ $ cat output.gv | dot -Tsvg > output.svg
 
 For a larger site:
 ```
-$ sbt "run davna.nyc"
+$ sbt "run www.digitalocean.com"
 $ cat output.gv | sfdp -Tsvg > output.svg
 ```
