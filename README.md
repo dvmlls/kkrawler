@@ -1,6 +1,6 @@
 # krawlr
 
-Crawls a website and outputs a [dot](http://en.wikipedia.org/wiki/DOT_%28graph_description_language%29) file which you can turn into an SVG digraph with GraphViz. 
+Crawls a website and outputs a [DOT](http://en.wikipedia.org/wiki/DOT_%28graph_description_language%29) file which you can turn into an SVG digraph with GraphViz `dot` or `sfdp`. 
 
 ## Usage
 
