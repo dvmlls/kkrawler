@@ -16,19 +16,19 @@ object Main extends App {
   implicit val timeout = Timeout(5 seconds)
   implicit val ctx = s.dispatcher
 
-  val c = s.actorOf(Props[Client], "client")
+  val c = s.actorOf(Props { new Client(timeoutMS=Some(2500)) }, "client")
   val p = s.actorOf(Props[Parser], "parser")
   s.actorOf(Props[Unhandler], "unhandler")
 
   class Worker(url:String) extends Actor with ActorLogging {
     c ! Client.Request(url)
 
-    context.system.scheduler.scheduleOnce(30 seconds, self, Kill)
-
-    def stop(): Unit = {
-      context.parent ! Complete
-      context.stop(self)
+    override def preRestart(why:Throwable, message:Option[Any]): Unit ={
+      log.info(s"restarting: url=$url message=$message")
+      super.preRestart(why, message)
     }
+
+    def stop(): Unit = { context.stop(self) }
 
     val awaitingLinks:Receive = {
       case Parser.Response(to) => context.parent ! Reference(url, to)
@@ -45,15 +45,11 @@ object Main extends App {
       case Client.Redirect(to) =>
         context.parent ! Redirect(url, to)
         stop()
-      case Client.Error(msg) =>
-        log.error(s"msg=$msg url=$url")
-        context.parent ! Broken(url)
-        stop()
       case Client.Other() => stop()
-      case Failure(ex) =>
-        log.warning("killing myself", ex)
-        throw new Exception("restarting myself", ex)
+      case akka.actor.Status.Failure(ex) => throw new Exception("restarting myself", ex)
     }
+
+    override def postStop(): Unit = { context.parent ! Complete }
   }
 
   case object Complete
@@ -74,9 +70,7 @@ object Main extends App {
     check(s"http://$domain")
 
     override def supervisorStrategy = OneForOneStrategy(maxNrOfRetries = 5, loggingEnabled=true) {
-      case _ =>
-        log.info("restarting: " + sender())
-        Restart
+      case _ => Restart
     }
 
     def check(url:String): Unit = {
@@ -112,9 +106,9 @@ object Main extends App {
       case Complete =>
         workers -= sender()
         if (workers.size < 10 || workers.size % 10 == 0) log.info(s"workers: ${workers.size}")
-        if (workers.size == 0) {
+        if (workers.isEmpty) {
           log.info("finished")
-          val file = new File("output.gv")
+          val file = new File(s"$domain.gv")
           val w = new BufferedWriter(new FileWriter(file))
           w.write(Dot.print(references, domain))
           w.close()
